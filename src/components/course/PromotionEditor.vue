@@ -122,11 +122,7 @@ const generateContent = async () => {
   isGenerating.value = true
 
   try {
-    const result = await generatePromotion(
-      props.courseInfo.topic,
-      props.courseInfo.targetAudience,
-      props.courseInfo.className
-    )
+    const result = await generatePromotion(props.courseInfo)
 
     if (result.success) {
       promotionData.content = result.data

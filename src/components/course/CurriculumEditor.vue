@@ -19,6 +19,12 @@
         </p>
       </div>
 
+      <!-- 複製全部課綱按鈕 -->
+      <div v-if="curriculumList.length > 0" class="flex justify-end mb-2">
+        <button @click="copyAllCurriculum" class="btn btn-outline btn-sm">
+          <i class="fas fa-copy mr-1"></i> 複製全部課綱到剪貼簿
+        </button>
+      </div>
       <!-- 課綱列表 -->
       <div v-if="curriculumList.length > 0" class="space-y-4">
         <div

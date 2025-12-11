@@ -2,45 +2,143 @@
 
 ## 🎯 目前開發進度
 
-### ✅ 已完成 (Phase 1: 專案骨架)
+### ✅ 已完成功能
 
-#### 基礎設定
+#### Phase 1: 基礎架構 (100% 完成)
+
+**基礎設定**
 
 - [x] Vue 3 + Vite 專案結構
-- [x] Tailwind CSS 設定
+- [x] Tailwind CSS + DaisyUI (Coffee 主題)
 - [x] Vue Router 路由設定
 - [x] Pinia 狀態管理
-- [x] Firebase 服務整合
-- [x] Gemini API 服務
-- [x] Google Forms API 服務
+- [x] Firebase 服務整合 (Firestore, Auth, Storage)
+- [x] Gemini API 服務 (gemini-2.0-flash-exp)
+- [x] Google Forms API 服務骨架
 
-#### 共用元件
+**共用元件**
 
-- [x] ToastNotification (通知元件)
+- [x] ToastNotification (通知系統完整實作)
 - [x] LoadingSpinner (載入動畫)
 - [x] ConfirmDialog (確認對話框)
+- [x] CourseCalendar (FullCalendar 整合完成)
 
-#### 頁面結構
+**工具函數**
 
-- [x] Home.vue (首頁)
-- [x] CourseCreate.vue (課程建立 - 含步驟流程)
-- [x] CourseList.vue (課程列表 - 骨架)
-- [x] CourseEdit.vue (課程編輯 - 骨架)
-- [x] OAuthCallback.vue (Google 授權回調)
-
-#### 課程建立元件
-
-- [x] CourseBasicInfo (基本資訊 - 含 AI 班級名稱生成)
-- [x] CourseSchedule (排課設定 - 骨架)
-- [x] CurriculumEditor (課綱編輯 - 骨架)
-- [x] InfographicGenerator (圖表生成 - 骨架)
-- [x] PromotionEditor (宣傳內容 - 骨架)
-- [x] CourseCalendar (課程日曆 - 骨架)
-
-#### 工具函數
-
-- [x] dateUtils.js (日期處理)
+- [x] dateUtils.js (日期計算、排課邏輯、日曆事件轉換)
 - [x] validators.js (表單驗證)
+
+#### Phase 2: 課程建立流程 (約 70% 完成)
+
+**步驟 1: 課程基本設定 (95% 完成)**
+
+- [x] 課程主題、目標客群、課程描述輸入
+- [x] 課程分類選擇 (兒童課程/職訓課程)
+- [x] AI 班級名稱生成 (3 個建議,可選擇或自訂)
+- [x] 總課程時數、每日時數設定
+- [x] 自動計算預計天數
+- [x] 課程開始/結束日期選擇 (jQuery UI Datepicker)
+- [x] 上課星期多選 (週一至週日)
+- [x] 上課時間設定 (jQuery UI Timepicker)
+- [x] 自動計算排課日期 (支援按天數/按日期範圍兩種模式)
+- [x] FullCalendar 日曆預覽
+- [x] 排課日期清單預覽
+- [x] 完整表單驗證與錯誤提示
+- [x] CourseBasicSetup 元件 (整合基本資訊與排課設定)
+
+**步驟 2: 課綱生成 (90% 完成)**
+
+- [x] AI 批次生成所有課綱 (Gemini 2.0 Flash Exp API)
+- [x] 顯示生成進度 (已生成 X / 總共 Y 天)
+- [x] 每日課綱卡片顯示 (日期、時間、單元名稱)
+- [x] 課綱內容顯示 (學習目標、教學內容、小作業)
+- [x] 120 分鐘課程節奏設計 (已整合到 Gemini prompt)
+- [x] 課綱編輯功能 (Markdown textarea)
+- [x] 單日課綱重新生成
+- [x] 編輯模式切換
+- [x] CurriculumEditor 元件完整實作
+- [ ] 課綱 Markdown 渲染優化 (目前純文字顯示)
+
+**步驟 4: 宣傳內容 (70% 完成)**
+
+- [x] AI 生成宣傳文案按鈕
+- [x] 文案編輯區域 (可手動修改)
+- [x] 重新生成功能
+- [x] 字數統計
+- [x] 預覽顯示
+- [x] 複製到剪貼簿功能
+- [x] PromotionEditor 元件
+- [ ] Gemini API 宣傳文案生成實際測試
+
+**頁面結構**
+
+- [x] Home.vue (首頁 - 功能介紹與快速開始)
+- [x] CourseCreate.vue (課程建立 - 4 步驟流程完整)
+- [x] CourseList.vue (課程列表 - 僅骨架)
+- [x] CourseEdit.vue (課程編輯 - 僅骨架)
+- [x] OAuthCallback.vue (Google 授權回調 - 骨架)
+
+### ⏳ 進行中功能
+
+#### Phase 3: 資訊圖表生成 (10% 完成)
+
+**步驟 3: 資訊圖表**
+
+- [x] InfographicGenerator 元件骨架
+- [ ] 4 種風格選擇器 (手繪插畫/科技 AI/日式漫畫/8bit 遊戲)
+- [ ] Gemini Imagen API 整合 (目前僅 placeholder)
+- [ ] 為每日課程生成圖表
+- [ ] 顯示生成進度
+- [ ] 圖片網格預覽
+- [ ] 單張圖片重新生成
+- [ ] 切換風格並重新生成
+- [ ] Firebase Storage 圖片上傳
+- [ ] 圖片下載功能
+
+### ❌ 待開發功能
+
+#### Phase 4: 課程管理 (15% 完成)
+
+**課程列表頁 (CourseList.vue)**
+
+- [x] 頁面骨架
+- [ ] 從 Firebase Firestore 載入課程列表
+- [ ] 卡片式顯示課程
+- [ ] 篩選功能 (分類、日期)
+- [ ] 搜尋功能
+- [ ] 排序功能 (日期、名稱)
+- [ ] 刪除課程 (含確認對話框)
+- [ ] 點擊進入編輯頁
+
+**課程編輯頁 (CourseEdit.vue)**
+
+- [x] 頁面骨架
+- [ ] 根據 ID 載入現有課程資料
+- [ ] 複用 CourseCreate 的所有元件
+- [ ] 允許修改所有欄位
+- [ ] 更新課程到 Firebase
+- [ ] Google 表單生成按鈕 (僅兒童課程)
+
+#### Phase 5: Google 表單整合 (0% 完成)
+
+- [ ] Google Cloud Console 專案設定
+- [ ] 啟用 Google Forms API
+- [ ] OAuth 2.0 認證流程實作
+- [ ] 處理 access token
+- [ ] 自動建立 Google 表單
+- [ ] 插入課程名稱與介紹
+- [ ] 插入每日課程圖片
+- [ ] 設定表單欄位:
+  - [ ] 學生姓名 (必填)
+  - [ ] 年級選擇 (下拉式選單)
+  - [ ] 家長姓名 (必填)
+  - [ ] 聯絡電話 (必填)
+  - [ ] Email (必填,格式驗證)
+  - [ ] 一週電腦使用時間 (單選)
+- [ ] 顯示表單連結
+- [ ] 複製表單連結功能
+- [ ] 儲存表單 ID 至 Firebase
+- [ ] 僅兒童課程顯示生成按鈕
 
 ---
 

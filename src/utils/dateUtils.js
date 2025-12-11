@@ -16,7 +16,34 @@ export const formatTime = (time) => {
   return time
 }
 
-// 計算排課日期
+// 計算排課日期（根據總天數）
+export const calculateScheduledDatesByDays = (startDate, totalDays, weekdays) => {
+  const dates = []
+  const start = new Date(startDate)
+  
+  // 將 weekdays 轉換為 JavaScript 的星期表示 (0-6, 0是週日)
+  const selectedDays = weekdays.map(day => day === 7 ? 0 : day)
+  
+  let current = new Date(start)
+  let foundDays = 0
+  
+  // 尋找足夠的上課日期
+  while (foundDays < totalDays) {
+    const dayOfWeek = current.getDay()
+    if (selectedDays.includes(dayOfWeek)) {
+      dates.push(new Date(current).toISOString().split('T')[0])
+      foundDays++
+    }
+    current.setDate(current.getDate() + 1)
+    
+    // 防止無限循環（最多找一年）
+    if (dates.length > 365) break
+  }
+  
+  return dates
+}
+
+// 計算排課日期（舊版，根據結束日期）
 export const calculateScheduledDates = (startDate, endDate, weekdays) => {
   const dates = []
   const start = new Date(startDate)

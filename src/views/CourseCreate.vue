@@ -114,6 +114,7 @@ const courseData = reactive({
     description: '',
     category: 'children',
     className: '',
+    nameKeywords: '',
     suggestedNames: []
   },
   schedule: {

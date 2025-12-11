@@ -32,18 +32,22 @@ export const generateText = async (prompt, config = {}) => {
 }
 
 // 生成班級名稱建議
-export const generateClassNames = async (topic, audience) => {
+export const generateClassNames = async (topic, audience, keywords = '') => {
+  // 建構關鍵字提示
+  const keywordsPrompt = keywords ? `- 關鍵字: ${keywords}（必須自然融入名稱中）\n` : ''
+  const keywordsRule = keywords ? '\n5. **關鍵字融入**: 必須自然地將關鍵字融入名稱中，讓名稱讀起來流暢' : ''
+  
   const prompt = `你是一位教育行銷專家。請生成 3 個簡短有力、直擊痛點的課程班級名稱：
 
 課程資訊：
 - 課程主題: ${topic}
 - 目標客群: ${audience}
-
+${keywordsPrompt}
 命名原則：
 1. **簡短精準**：控制在 8-12 字，去除冗詞贅字
 2. **直擊痛點**：用一個核心痛點詞彙（落後→領先、不會→精通、迷茫→突破）
 3. **具體成果**：明確說出能獲得什麼（技能、證書、作品、能力）
-4. **易記易傳**：口語化、有節奏感、朗朗上口
+4. **易記易傳**：口語化、有節奏感、朗朗上口${keywordsRule}
 
 三種風格（每個只用一個痛點詞+一個成果詞）：
 - 第1個：焦慮解決型 →「X天學會Y」「零基礎變Z高手」
@@ -51,10 +55,15 @@ export const generateClassNames = async (topic, audience) => {
 - 第3個：能力躍升型 →「從X到Y」「突破Z關卡」
 
 範例（注意簡短）：
+${keywords ? `有關鍵字範例（關鍵字：${keywords}）：
+- "NotebookLM筆記魔法師：AI實戰"（融入關鍵字）
+- "AI學習力：NotebookLM零基礎班"（自然融入）
+- "NotebookLM+AI突破營"（簡潔有力）
+` : `無關鍵字範例：
 - "AI實戰營：5天做出智能助手"（8字核心+成果）
 - "Python零基礎速成班"（9字解決焦慮）
 - "小創客證照特訓"（7字能力+認證）
-
+`}
 請以 JSON 格式回應：
 {
   "suggestions": ["名稱1", "名稱2", "名稱3"]
@@ -80,7 +89,7 @@ export const generateDayCurriculum = async (courseInfo, day) => {
   const { className, topic, description, audience, category, totalDays, hoursPerDay } = courseInfo
   const languageStyle = category === 'children' ? '使用國中生可理解的語言，活潑有趣' : '使用高中生以上可理解的語言，專業清晰'
   
-  const prompt = `請根據以下課程資訊，生成第 ${day} 天的完整課綱：
+  const prompt = `請根據以下課程資訊，生成第 ${day} 天的完整課綱，並依照 120 分鐘活動節奏分段設計：
 
 課程資訊：
 - 班級名稱: ${className}
@@ -91,20 +100,40 @@ export const generateDayCurriculum = async (courseInfo, day) => {
 - 總天數: ${totalDays}
 - 每日時數: ${hoursPerDay} 小時
 
+請務必依照下列「120 分鐘課程活動設計」分段，明確標註每個時段的重點與建議活動：
+---
+0–10 分鐘：進場、設備測試、暖身互動（打招呼、用投票/聊天室連結上節課或課前任務，讓學生進入狀態）
+10–40 分鐘：教學區塊 A（老師短講＋示範＋個人小練習＋全班即時講解）
+40–45 分鐘：休息 1（離開螢幕、伸展、喝水，提醒回來時間）
+45–75 分鐘：教學區塊 B（分組活動或討論＋小組分享與統整）
+75–80 分鐘：休息 2（腦力/肢體小遊戲、猜謎、氣氛活化）
+80–110 分鐘：教學區塊 C（整合應用、迷你專題或作品發表）
+110–120 分鐘：收尾整理＋回饋與說明課後任務（重點整理、小投票/回饋、下次預告）
+---
+此節奏把長時間切成 3 段，每段 25–30 分鐘實作為主，搭配 5 分鐘休息，接近「番茄鐘」型式，對注意力較短的學童與國中生特別有幫助。
+
 要求：
 - ${languageStyle}
 - 內容必須緊扣「課程描述」中提到的教學重點、工具和技能
 - 內容要符合第 ${day} 天的學習進度（循序漸進）
 - 第1天著重基礎概念與環境設定，後續天數逐步深入實作
 - 學習目標要明確可衡量（3-5個）
-- 教學內容要詳細具體，包含實作步驟
+- 教學內容要詳細具體，包含每個分段的活動與實作步驟
 - 小作業要能鞏固當日學習，並與課程描述的目標一致
 
 請以 JSON 格式回應：
 {
   "unitName": "單元名稱",
   "learningObjectives": ["目標1", "目標2", "目標3"],
-  "teachingContent": "詳細教學內容...",
+  "teachingContent": {
+    "0-10": "...",
+    "10-40": "...",
+    "40-45": "...",
+    "45-75": "...",
+    "75-80": "...",
+    "80-110": "...",
+    "110-120": "..."
+  },
   "homework": "小作業說明..."
 }`
 
