@@ -153,6 +153,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { generateImage } from '@/services/gemini'
+import { uploadImageFromUrl, generateImagePath } from '@/services/storage'
 import { useToastStore } from '@/stores/toastStore'
 
 const props = defineProps({
@@ -163,6 +164,10 @@ const props = defineProps({
   curriculum: {
     type: Array,
     required: true
+  },
+  courseId: {
+    type: String,
+    default: null
   }
 })
 
@@ -243,9 +248,24 @@ const generateImageForDay = async (index) => {
     const result = await generateImage(unitName, objectives, selectedStyle.value)
     
     if (result.success) {
+      let finalImageUrl = result.data.imageUrl
+      
+      // 如果有 courseId,嘗試上傳到 Firebase Storage
+      if (props.courseId) {
+        const storagePath = generateImagePath(props.courseId, 'infographic', index)
+        const uploadResult = await uploadImageFromUrl(result.data.imageUrl, storagePath)
+        
+        if (uploadResult.success) {
+          finalImageUrl = uploadResult.url
+          console.log(`圖片已上傳至 Firebase Storage: ${storagePath}`)
+        } else {
+          console.warn(`Firebase Storage 上傳失敗,使用原始 URL: ${uploadResult.error}`)
+        }
+      }
+      
       images.push({
         day: index + 1,
-        imageUrl: result.data.imageUrl,
+        imageUrl: finalImageUrl,
         generatedAt: new Date().toISOString(),
         isRegenerating: false
       })
@@ -311,7 +331,19 @@ const regenerateImage = async (index) => {
     const result = await generateImage(unitName, objectives, selectedStyle.value)
     
     if (result.success) {
-      images[index].imageUrl = result.data.imageUrl
+      let finalImageUrl = result.data.imageUrl
+      
+      // 如果有 courseId,嘗試上傳到 Firebase Storage
+      if (props.courseId) {
+        const storagePath = generateImagePath(props.courseId, 'infographic', index)
+        const uploadResult = await uploadImageFromUrl(result.data.imageUrl, storagePath)
+        
+        if (uploadResult.success) {
+          finalImageUrl = uploadResult.url
+        }
+      }
+      
+      images[index].imageUrl = finalImageUrl
       images[index].generatedAt = new Date().toISOString()
       toastStore.showToast(`第 ${index + 1} 天圖表重新生成完成`, 'success')
     } else {

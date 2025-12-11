@@ -74,6 +74,7 @@
         v-if="currentStep === 3"
         v-model="courseData.infographics"
         :curriculum="courseData.curriculum"
+        :courseId="currentCourseId"
         @next="nextStep"
         @prev="prevStep"
       />
@@ -106,6 +107,7 @@ const toastStore = useToastStore()
 
 const steps = ['基本設定', '課綱生成', '資訊圖表', '宣傳內容']
 const currentStep = ref(1)
+const currentCourseId = ref(null)
 
 const courseData = reactive({
   basicInfo: {
@@ -137,8 +139,14 @@ const courseData = reactive({
   googleForm: null
 })
 
-const nextStep = () => {
+const nextStep = async () => {
   console.log('nextStep 被呼叫, 當前步驟:', currentStep.value)
+  
+  // 在進入圖表生成步驟前,先建立草稿以獲得 courseId
+  if (currentStep.value === 2 && !currentCourseId.value) {
+    await saveDraft()
+  }
+  
   if (currentStep.value < steps.length) {
     currentStep.value++
     console.log('切換到步驟:', currentStep.value)
@@ -151,26 +159,59 @@ const prevStep = () => {
   }
 }
 
-const saveCourse = async () => {
+const saveDraft = async () => {
   try {
-    // 準備儲存的資料
     const courseToSave = {
-      ...courseData.basicInfo,
+      basicInfo: courseData.basicInfo,
       schedule: courseData.schedule,
       curriculum: courseData.curriculum,
-      infographics: courseData.infographics,
+      infographic: courseData.infographics,
       promotion: courseData.promotion,
-      googleForm: courseData.googleForm,
-      status: 'draft',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: 'draft'
     }
 
-    const result = await courseStore.createCourse(courseToSave)
+    if (currentCourseId.value) {
+      // 更新現有課程
+      const result = await courseStore.updateCourse(currentCourseId.value, courseToSave)
+      if (result.success) {
+        toastStore.showToast('草稿已儲存', 'success')
+      }
+    } else {
+      // 建立新課程
+      const result = await courseStore.createCourse(courseToSave)
+      if (result.success) {
+        currentCourseId.value = result.data.id
+        toastStore.showToast('草稿已建立', 'success')
+      }
+    }
+  } catch (error) {
+    console.error('儲存草稿錯誤:', error)
+  }
+}
+
+const saveCourse = async () => {
+  try {
+    const courseToSave = {
+      basicInfo: courseData.basicInfo,
+      schedule: courseData.schedule,
+      curriculum: courseData.curriculum,
+      infographic: courseData.infographics,
+      promotion: courseData.promotion,
+      status: 'published'
+    }
+
+    let result
+    if (currentCourseId.value) {
+      result = await courseStore.updateCourse(currentCourseId.value, courseToSave)
+    } else {
+      result = await courseStore.createCourse(courseToSave)
+    }
     
     if (result.success) {
       toastStore.showToast('課程建立成功！', 'success')
-      router.push('/courses')
+      setTimeout(() => {
+        router.push('/course/list')
+      }, 1000)
     } else {
       toastStore.showToast('課程建立失敗：' + result.error, 'error')
     }
