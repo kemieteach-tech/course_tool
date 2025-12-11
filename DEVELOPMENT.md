@@ -73,27 +73,25 @@
 **頁面結構**
 
 - [x] Home.vue (首頁 - 功能介紹與快速開始)
-- [x] CourseCreate.vue (課程建立 - 4 步驟流程完整)
+- [x] CourseCreate.vue (課程建立 - 4 步驟流程完整實作)
 - [x] CourseList.vue (課程列表 - 僅骨架)
 - [x] CourseEdit.vue (課程編輯 - 僅骨架)
 - [x] OAuthCallback.vue (Google 授權回調 - 骨架)
 
+**新增功能 (v1.1)**
+
+- [x] 班級名稱關鍵字欄位 (選填)
+- [x] 關鍵字自然融入 AI 生成邏輯
+- [x] 更新 Gemini API prompt 支援關鍵字
+
 ### ⏳ 進行中功能
 
-#### Phase 3: 資訊圖表生成 (10% 完成)
+**待實際測試項目:**
 
-**步驟 3: 資訊圖表**
-
-- [x] InfographicGenerator 元件骨架
-- [ ] 4 種風格選擇器 (手繪插畫/科技 AI/日式漫畫/8bit 遊戲)
-- [ ] Gemini Imagen API 整合 (目前僅 placeholder)
-- [ ] 為每日課程生成圖表
-- [ ] 顯示生成進度
-- [ ] 圖片網格預覽
-- [ ] 單張圖片重新生成
-- [ ] 切換風格並重新生成
-- [ ] Firebase Storage 圖片上傳
-- [ ] 圖片下載功能
+- [ ] 完整課程建立流程測試 (步驟 1-4)
+- [ ] Markdown 渲染效果驗證
+- [ ] 資訊圖表生成與下載功能測試
+- [ ] 宣傳內容生成測試
 
 ### ❌ 待開發功能
 

@@ -46,6 +46,7 @@
                 v-if="!item.isEditing"
                 @click="toggleEdit(index)"
                 class="btn btn-sm btn-secondary"
+                title="編輯"
               >
                 <i class="fas fa-edit"></i>
               </button>
@@ -60,9 +61,9 @@
             </div>
           </div>
 
-          <!-- 顯示模式 -->
-          <div v-if="!item.isEditing && item.content" class="prose prose-sm max-w-none">
-            <div class="whitespace-pre-wrap text-base-content">{{ item.content }}</div>
+          <!-- 顯示模式 - Markdown 渲染 -->
+          <div v-if="!item.isEditing && item.content" class="curriculum-content">
+            <div class="prose prose-sm max-w-none" v-html="renderMarkdown(item.content)"></div>
           </div>
 
           <!-- 編輯模式 -->
@@ -121,8 +122,15 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { marked } from 'marked'
 import { generateDayCurriculum } from '@/services/gemini'
 import { useToastStore } from '@/stores/toastStore'
+
+// 配置 marked
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
 
 const props = defineProps({
   modelValue: {
@@ -281,6 +289,11 @@ const updateModelValue = () => {
   })))
 }
 
+const renderMarkdown = (content) => {
+  if (!content) return ''
+  return marked(content)
+}
+
 const handleNext = () => {
   if (!allGenerated.value) {
     toastStore.showToast('請先生成所有課綱', 'warning')
@@ -290,3 +303,93 @@ const handleNext = () => {
   emit('next')
 }
 </script>
+
+<style scoped>
+/* Markdown 渲染樣式 */
+.curriculum-content :deep(.prose) {
+  color: var(--fallback-bc, oklch(var(--bc) / 1));
+}
+
+.curriculum-content :deep(.prose h1),
+.curriculum-content :deep(.prose h2),
+.curriculum-content :deep(.prose h3),
+.curriculum-content :deep(.prose h4) {
+  color: var(--fallback-p, oklch(var(--p) / 1));
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.curriculum-content :deep(.prose h1) { font-size: 1.5em; }
+.curriculum-content :deep(.prose h2) { font-size: 1.3em; }
+.curriculum-content :deep(.prose h3) { font-size: 1.1em; }
+.curriculum-content :deep(.prose h4) { font-size: 1em; }
+
+.curriculum-content :deep(.prose ul),
+.curriculum-content :deep(.prose ol) {
+  margin-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.curriculum-content :deep(.prose li) {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.curriculum-content :deep(.prose p) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.6;
+}
+
+.curriculum-content :deep(.prose strong) {
+  color: var(--fallback-p, oklch(var(--p) / 1));
+  font-weight: bold;
+}
+
+.curriculum-content :deep(.prose code) {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1));
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.curriculum-content :deep(.prose pre) {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1));
+  padding: 1em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+}
+
+.curriculum-content :deep(.prose blockquote) {
+  border-left: 4px solid var(--fallback-p, oklch(var(--p) / 1));
+  padding-left: 1em;
+  margin-left: 0;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.curriculum-content :deep(.prose hr) {
+  border-color: var(--fallback-bc, oklch(var(--bc) / 0.2));
+  margin: 1.5em 0;
+}
+
+.curriculum-content :deep(.prose table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.curriculum-content :deep(.prose th),
+.curriculum-content :deep(.prose td) {
+  border: 1px solid var(--fallback-bc, oklch(var(--bc) / 0.2));
+  padding: 0.5em;
+  text-align: left;
+}
+
+.curriculum-content :deep(.prose th) {
+  background-color: var(--fallback-b2, oklch(var(--b2) / 1));
+  font-weight: bold;
+}
+</style>
